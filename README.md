@@ -82,12 +82,14 @@ This starts the API and PostgreSQL with a persistent `famtour-postgres` volume. 
 
 ### Deploy with Render
 
-The repository includes [render.yaml](./render.yaml), which provisions the Docker web service and PostgreSQL database together.
+The repository includes [render.yaml](./render.yaml), which provisions the Docker web service without requiring a paid Render database. Render will ask you to provide `DATABASE_URL` securely during setup.
 
 1. Open the Render Blueprint deployment page:
    `https://dashboard.render.com/blueprint/new?repo=https://github.com/Yusuph-Maswi-Wambura/Tanzania_Famtour`
 2. Sign in with GitHub and approve the repository.
-3. Click **Apply**.
-4. Render will provide a public URL similar to `https://tanzania-famtour.onrender.com`.
+3. Create a free PostgreSQL database with a provider such as Neon or Supabase and copy its pooled PostgreSQL connection string.
+4. Enter that connection string as the private `DATABASE_URL` Blueprint variable when Render asks for it. Never commit it to GitHub.
+5. Click **Apply**.
+6. Render will provide a public URL similar to `https://tanzania-famtour.onrender.com`.
 
-After deployment, set `CLIENT_ORIGIN` to the generated Render URL. Render's free database and web service may sleep when inactive.
+After deployment, set `CLIENT_ORIGIN` to the generated Render URL. A free external database and Render free web service may sleep when inactive.

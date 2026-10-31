@@ -19,12 +19,4 @@ services:
       - key: ENCRYPTION_KEY
         generateValue: true
       - key: DATABASE_URL
-        fromDatabase:
-          name: tanzania-famtour-db
-          property: connectionString
-
-databases:
-  - name: tanzania-famtour-db
-    databaseName: famtour
-    user: famtour
-    plan: free
+        sync: false
