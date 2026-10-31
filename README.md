@@ -46,3 +46,11 @@ docker compose up --build -d
 ```
 
 This starts the API and PostgreSQL with a persistent `famtour-postgres` volume. Set `CLIENT_ORIGIN` and `DATABASE_URL` to deployment values before publishing. A domain can be added later without changing the API routes.
+
+## GitHub deployment checklist
+
+1. Configure a hosting service that supports Node.js or Docker.
+2. Set `NODE_ENV=production`, `DATABASE_URL`, `CLIENT_ORIGIN`, and `PORT` in the host environment.
+3. Use `npm ci`, `npm run build`, and `npm start`, or deploy the included `Dockerfile`.
+4. Configure the host health check to use `GET /health`.
+5. Add the final domain to `CLIENT_ORIGIN` after DNS is configured.
