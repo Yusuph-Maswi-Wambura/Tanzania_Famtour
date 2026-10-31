@@ -23,6 +23,8 @@ app.use('/api', rateLimit({ windowMs: 15 * 60 * 1000, limit: 100, standardHeader
 
 app.get('/health', (_request, response) => response.json({ status: 'ok', service: 'tanzania-famtour', timestamp: new Date().toISOString() }));
 app.use('/api', apiRouter);
-app.get('/', (_request, response) => response.sendFile(path.resolve(process.cwd(), 'Tanzania_Famtour.ejs')));
+app.get('/', (_request, response) => {
+  response.type('html').sendFile(path.resolve(process.cwd(), 'Tanzania_Famtour.ejs'));
+});
 app.use(notFoundHandler);
 app.use(errorHandler);

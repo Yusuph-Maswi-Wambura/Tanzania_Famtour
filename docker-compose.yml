@@ -21,10 +21,16 @@ services:
       PORT: 3000
       CLIENT_ORIGIN: http://localhost:3000
       DATABASE_URL: postgresql://famtour:famtour_password@database:5432/famtour
+      PREVIEW_MODE: "false"
     depends_on:
       database:
         condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   famtour-postgres:

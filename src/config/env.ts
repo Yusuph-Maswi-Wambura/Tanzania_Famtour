@@ -11,6 +11,10 @@ const envSchema = z.object({
     .default('false')
     .transform((value) => value === 'true'),
   DATABASE_URL: z.string().min(1),
+  PREVIEW_MODE: z
+    .string()
+    .default('false')
+    .transform((value) => value === 'true'),
 });
 
 export const env = envSchema.parse(process.env);

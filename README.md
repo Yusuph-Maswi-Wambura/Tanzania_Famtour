@@ -29,6 +29,17 @@ Open `http://localhost:3000`. API routes are under `/api`:
 - `POST /api/quotes`
 - `POST /api/contact`
 
+For a frontend-only preview when PostgreSQL is not installed, use:
+
+```powershell
+$env:DATABASE_URL="postgresql://preview:preview@localhost:5432/preview"
+$env:PREVIEW_MODE="true"
+npm run build
+npm start
+```
+
+Preview mode serves the website, but enquiry submissions require PostgreSQL and should not be used for production.
+
 Enquiries are persisted in PostgreSQL. The application creates its small request schema on startup; for a larger production system, manage the same schema with a dedicated migration tool and add email/CRM notifications.
 
 ## Production and Docker
