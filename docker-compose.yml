@@ -1,0 +1,30 @@
+services:
+  database:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: famtour
+      POSTGRES_USER: famtour
+      POSTGRES_PASSWORD: famtour_password
+    volumes:
+      - famtour-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U famtour -d famtour"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  famtour:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      CLIENT_ORIGIN: http://localhost:3000
+      DATABASE_URL: postgresql://famtour:famtour_password@database:5432/famtour
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  famtour-postgres:
