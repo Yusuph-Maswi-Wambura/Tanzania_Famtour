@@ -15,6 +15,7 @@ const envSchema = z.object({
     .string()
     .default('false')
     .transform((value) => value === 'true'),
+  ENCRYPTION_KEY: z.string().min(32),
 });
 
 export const env = envSchema.parse(process.env);

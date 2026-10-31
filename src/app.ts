@@ -10,6 +10,8 @@ import morgan from 'morgan';
 import { env } from './config/env';
 import { errorHandler, notFoundHandler } from './middleware/errors';
 import { apiRouter } from './routes/api';
+import { adminRouter } from './routes/admin';
+import { adminDashboard } from './admin/dashboard';
 
 export const app = express();
 app.set('trust proxy', env.TRUST_PROXY);
@@ -23,6 +25,8 @@ app.use('/api', rateLimit({ windowMs: 15 * 60 * 1000, limit: 100, standardHeader
 
 app.get('/health', (_request, response) => response.json({ status: 'ok', service: 'tanzania-famtour', timestamp: new Date().toISOString() }));
 app.use('/api', apiRouter);
+app.use('/api/admin', rateLimit({ windowMs: 15 * 60 * 1000, limit: 20, standardHeaders: true, legacyHeaders: false }), adminRouter);
+app.get('/admin', (_request, response) => response.type('html').send(adminDashboard));
 app.get('/', (_request, response) => {
   response.type('html').sendFile(path.resolve(process.cwd(), 'Tanzania_Famtour.ejs'));
 });

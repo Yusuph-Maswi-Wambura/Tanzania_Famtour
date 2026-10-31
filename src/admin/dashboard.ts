@@ -1,0 +1,31 @@
+export const adminDashboard = `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tanzania Famtour Admin</title><style>
+body{font-family:Inter,system-ui,sans-serif;background:#f4f6f1;color:#20392c;margin:0}main{max-width:980px;margin:40px auto;padding:0 20px}
+.card{background:#fff;border:1px solid #e1e7df;border-radius:12px;padding:24px;margin:18px 0;box-shadow:0 8px 25px #183d2310}
+h1,h2{font-weight:600}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}
+label{font-size:12px;font-weight:700;color:#69756d}input,textarea{border:1px solid #d5ded6;border-radius:7px;padding:11px;font:inherit}button{background:#174b39;color:#fff;border:0;border-radius:7px;padding:11px 16px;cursor:pointer;margin-top:12px}
+.muted{color:#718078;font-size:13px}.error{color:#a6362e}.success{color:#236542}.hidden{display:none}table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:10px;border-bottom:1px solid #edf0eb}
+@media(max-width:650px){.grid{grid-template-columns:1fr}}
+</style></head><body><main>
+<h1>Tanzania Famtour Admin</h1><p class="muted">Private administration area. Business and payment details are only saved after you enter them here.</p>
+<section id="auth" class="card"><div id="setup"><h2>Create first administrator</h2><p class="muted">Use a unique password of at least 12 characters.</p><form id="setupForm"><div class="grid"><div class="field"><label>NAME</label><input name="name" required minlength="2"></div><div class="field"><label>EMAIL</label><input name="email" type="email" required></div><div class="field full"><label>PASSWORD</label><input name="password" type="password" minlength="12" required></div></div><button>Create administrator</button></form></div>
+<div id="login" class="hidden"><h2>Admin login</h2><form id="loginForm"><div class="grid"><div class="field"><label>EMAIL</label><input name="email" type="email" required></div><div class="field"><label>PASSWORD</label><input name="password" type="password" required></div></div><button>Log in</button></form></div><p id="authMessage"></p></section>
+<section id="dashboard" class="hidden"><button id="logout" style="float:right">Log out</button><h2>Business settings</h2><p class="muted">Optional fields can be completed later. Payment details are encrypted before database storage.</p><form id="settingsForm" class="card"><div class="grid">
+<div class="field"><label>BUSINESS NAME</label><input name="businessName"></div><div class="field"><label>BUSINESS EMAIL</label><input name="businessEmail" type="email"></div><div class="field"><label>BUSINESS PHONE</label><input name="businessPhone"></div><div class="field"><label>WHATSAPP NUMBER</label><input name="whatsappNumber"></div><div class="field full"><label>ADDRESS</label><input name="address"></div><div class="field full"><label>CUSTOMER RESPONSE MESSAGE</label><textarea name="responseMessage" rows="3"></textarea></div><div class="field full"><label>BUSINESS HOURS</label><input name="businessHours"></div>
+<div class="field"><label>BANK NAME (OPTIONAL)</label><input name="bankName"></div><div class="field"><label>ACCOUNT NAME (OPTIONAL)</label><input name="accountName"></div><div class="field"><label>ACCOUNT NUMBER (OPTIONAL)</label><input name="accountNumber"></div><div class="field"><label>SWIFT CODE (OPTIONAL)</label><input name="swiftCode"></div><div class="field full"><label>PAYMENT INSTRUCTIONS (OPTIONAL)</label><textarea name="paymentInstructions" rows="3"></textarea></div></div><button>Save settings</button><p id="settingsMessage"></p></form>
+<div class="card"><h2>Customer requests</h2><button id="refresh">Refresh requests</button><div id="requests" class="muted">No requests loaded.</div></div></section>
+<script>
+const $=s=>document.querySelector(s), formData=f=>Object.fromEntries(new FormData(f));
+async function api(path,options={}){const r=await fetch('/api/admin/'+path,{headers:{'Content-Type':'application/json'},...options});const d=await r.json();if(!r.ok)throw Error(d.error||'Request failed');return d}
+function message(text,error=false){const e=$('#authMessage');e.textContent=text;e.className=error?'error':'success'}
+async function load(){try{const status=await api('status');if(status.setupRequired){$('#login').classList.add('hidden');$('#setup').classList.remove('hidden')}else{$('#setup').classList.add('hidden');$('#login').classList.remove('hidden')}}catch(e){message(e.message,true)}}
+async function dashboard(){ $('#auth').classList.add('hidden');$('#dashboard').classList.remove('hidden');const settings=(await api('settings')).data;for(const [k,v] of Object.entries(settings))if($('[name='+k+']'))$('[name='+k+']').value=v;refresh()}
+function safe(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+async function refresh(){const d=await api('requests');const rows=d.data.map(r=>'<tr><td>'+safe(r.kind)+'</td><td>'+safe(r.name)+'</td><td>'+safe(r.email)+'</td><td>'+safe(new Date(r.createdAt).toLocaleString())+'</td></tr>').join('');$('#requests').innerHTML=rows?'<table><tr><th>TYPE</th><th>NAME</th><th>EMAIL</th><th>RECEIVED</th></tr>'+rows+'</table>':'No requests yet.'}
+$('#setupForm').onsubmit=async e=>{e.preventDefault();try{await api('setup',{method:'POST',body:JSON.stringify(formData(e.target))});message('Administrator created. You can now log in.');await load()}catch(x){message(x.message,true)}};
+$('#loginForm').onsubmit=async e=>{e.preventDefault();try{await api('login',{method:'POST',body:JSON.stringify(formData(e.target))});await dashboard()}catch(x){message(x.message,true)}};
+$('#settingsForm').onsubmit=async e=>{e.preventDefault();try{await api('settings',{method:'PUT',body:JSON.stringify(formData(e.target))});$('#settingsMessage').textContent='Settings saved securely.'}catch(x){$('#settingsMessage').textContent=x.message;$('#settingsMessage').className='error'}};
+$('#logout').onclick=async()=>{await api('logout',{method:'POST'});location.reload()};$('#refresh').onclick=refresh;
+api('me').then(dashboard).catch(load);
+</script></main></body></html>`;

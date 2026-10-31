@@ -29,6 +29,20 @@ Open `http://localhost:3000`. API routes are under `/api`:
 - `POST /api/quotes`
 - `POST /api/contact`
 
+## Admin dashboard
+
+Open `/admin` after the application is running. On the first visit:
+
+1. Create the first administrator with a unique email and a password of at least 12 characters.
+2. Log in using the new administrator account.
+3. Enter business and communication information only when ready.
+4. Optionally enter bank/payment instructions; these fields are encrypted before storage.
+5. Review customer requests from the protected dashboard.
+
+The admin session uses an HTTP-only cookie. Passwords are hashed with `scrypt`, and admin-only API routes require a valid server-side session. The public website cannot read business settings, bank details, or customer requests.
+
+The initial dashboard provides settings and request viewing. Email delivery, WhatsApp integration, status workflows, and staff accounts should be added only after the core admin access has been configured.
+
 For a frontend-only preview when PostgreSQL is not installed, use:
 
 ```powershell
